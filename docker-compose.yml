@@ -1,8 +1,5 @@
-version: "3.8"
-
 services:
 
-  # Our Angular Frontend
   frontend:
     build:
       dockerfile: Dockerfile
@@ -11,13 +8,15 @@ services:
       - "4200:4200"
     depends_on:
       - backend
+    networks:
+      - linkedin_network
 
   backend:
     build:
       context: ./Linkedinbackend
       dockerfile: Dockerfile
     environment:
-      - DATABASE_HOST=postgres  # Use the service name as the host
+      - DATABASE_HOST=postgres
       - DATABASE_PORT=5432
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=Admin
@@ -25,7 +24,10 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    networks:
+      - linkedin_network
 
   postgres:
     image: postgres:13
@@ -34,9 +36,20 @@ services:
       - POSTGRES_PASSWORD=Admin
       - POSTGRES_DB=linkedin
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - linkedin_network
 
 volumes:
   postgres_data:
+
+networks:
+  linkedin_network:
+    driver: bridge
