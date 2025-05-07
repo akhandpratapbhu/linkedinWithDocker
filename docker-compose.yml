@@ -1,5 +1,6 @@
-services:
+version: "3.8"
 
+services:
   frontend:
     build:
       dockerfile: Dockerfile
@@ -16,11 +17,11 @@ services:
       context: ./Linkedinbackend
       dockerfile: Dockerfile
     environment:
-      - DATABASE_HOST=postgres
-      - DATABASE_PORT=5432
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=Admin
-      - DATABASE_NAME=linkedin
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Admin
+      - POSTGRES_DATABASE=linkedin
     ports:
       - "3000:3000"
     depends_on:
@@ -36,7 +37,7 @@ services:
       - POSTGRES_PASSWORD=Admin
       - POSTGRES_DB=linkedin
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
